@@ -17,8 +17,8 @@ const typeDefs = gql`
     image: String
     date: String
     url: String
-    createdAt: DateTime!
-    updatedAt: DateTime!
+    # createdAt: DateTime!
+    # updatedAt: DateTime!
   }
   type Mutation {
     createRace(name: String!): Race
@@ -37,13 +37,13 @@ const resolvers = {
     }
   },
   Mutation: {
-    addTodo: (_, { text }) => {
+    createRace: (_, { text }) => {
       racesIndex++;
       const id = `key-${racesIndex}`;
       races[id] = { id, text, done: false };
       return todos[id];
     },
-    updateTodoDone: (_, { id }) => {
+    updateRace: (_, { id }) => {
         races[id].done = true;
       return races[id];
     }
