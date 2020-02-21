@@ -40,11 +40,11 @@ const resolvers = {
     createRace: (_, { text }) => {
       racesIndex++;
       const id = `key-${racesIndex}`;
-      races[id] = { id, text, done: false };
+      Races[id] = { id, text, done: false };
       return todos[id];
     },
     updateRace: (_, { id }) => {
-        races[id].done = true;
+        Races[id].done = true;
       return races[id];
     }
   }
