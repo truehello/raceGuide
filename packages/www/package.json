@@ -9,7 +9,9 @@
     "clean": "gatsby clean"
   },
   "dependencies": {
+    "@apollo/client": "^3.0.0-beta.37",
     "@theme-ui/presets": "^0.3.0",
+    "apollo-link-context": "^1.0.19",
     "gatsby": "^2.19.19",
     "gatsby-plugin-create-client-paths": "^2.1.22",
     "gatsby-plugin-theme-ui": "^0.3.0",
