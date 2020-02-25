@@ -59,7 +59,7 @@ const resolvers = {
       racesIndex++;
       const id = `key-${racesIndex}`;
       Races[id] = { id, text, done: false };
-      return todos[id];
+      return Races[id];
     },
     updateRace: (_, { id }) => {
       Races[id].done = true;
