@@ -1,43 +1,35 @@
 import React, { useContext } from "react";
-import { Router, Link } from "@reach/router";
-import { Container, Flex, Heading, Button, NavLink } from "theme-ui";
+import { Router } from "@reach/router";
+import { Container, Flex, Heading, Button } from "theme-ui";
 import { IdentityContext } from "../../identity-context";
+import Header from "../components/Header"
+import CreateRace from "../components/CreateRace"
 
 let Dash = () => {
-  const { user, identity: netlifyIdentity } = useContext(IdentityContext);
+  const { user } = useContext(IdentityContext);
 
   return (
-    <Container>
-      <Flex as="nav">
-        <NavLink as={Link} to="/" p={2}>
-          Home
-        </NavLink>
-        <NavLink as={Link} to={"/app"} p={2}>
-          Dashboard
-        </NavLink>
-        {user && (
-          <NavLink
-            href="#!"
-            p={2}
-            onClick={() => {
-              netlifyIdentity.logout();
-            }}
-          >
-            Log out {user.user_metadata.full_name}
-          </NavLink>
-        )}
+    <Container sx={{ padding: 3 }}>
+        <Header />
+  
+      <Flex sx={{ flexDirection: "column", padding: 3, alignItems:"center" }}>
+      <Heading as="h1">DashBoard</Heading>
+     
+      <span>Hi {user && user.user_metadata.full_name}, do you want to add a new race?</span>
+      <CreateRace />
       </Flex>
-      <span>Dash hasUser: {user && user.user_metadata.full_name}</span>
+
+
     </Container>
   );
 };
 
 let DashLoggedOut = props => {
-  const { user, identity: netlifyIdentity } = useContext(IdentityContext);
+  const { identity: netlifyIdentity } = useContext(IdentityContext);
 
   return (
     <Flex sx={{ flexDirection: "column", padding: 3 }}>
-      <Heading as="h1">RaceBook Dashboard</Heading>
+      <Heading as="h1">RaceBook</Heading>
       <Button
         sx={{ marginTop: 2 }}
         onClick={() => {

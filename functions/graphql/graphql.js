@@ -1,5 +1,8 @@
 const { ApolloServer, gql } = require("apollo-server-lambda");
+const faunadb = require("faunadb");
+const q = faunadb.query;
 
+var client = new faunadb.Client({ secret: process.env.FAUNA_KEY });
 //example of a query reliant on logged in user
 // type Query {
 // Races: async (parent, args, { user }) => {
@@ -26,12 +29,8 @@ const typeDefs = gql`
   type Race {
     id: ID!
     name: String!
-    location: String!
     city: String
     country: String
-    latitude: Int
-    longitude: Int
-    description: String
     image: String
     date: String
     url: String
@@ -39,39 +38,84 @@ const typeDefs = gql`
     # updatedAt: DateTime!
   }
   type Mutation {
-    createRace(name: String!): Race
-    updateRace(id: ID!): Race
+    createRace(name: String!, city:String, country:String, description:string, image:String, date:String, url:String ): Race
+    updateRace(id: ID!, name: String!, city:String, country:String, description:string, image:String, date:String, url:String ): Race
     deleteRace(id: ID!): Race
   }
 `;
 
-const Races = {};
-let racesIndex = 0;
+//const Races = {};
+//let racesIndex = 0;
 // Provide resolver functions for your schema fields
 const resolvers = {
   Query: {
-    Races: () => {
-      return Object.values(Races);
-    }
-  },
-  Mutation: {
-    createRace: (_, { text }) => {
-      racesIndex++;
-      const id = `key-${racesIndex}`;
-      Races[id] = { id, text, done: false };
-      return Races[id];
+    Races: async (parent, args, { user }) => {
+        if (!user) {
+          return [];
+        } else {
+          const results = await client.query(
+            q.Paginate(q.Match(q.Index("Race_by_User"), user))
+          );
+          return results.data.map(([ref, name, location, image]) => ({
+            id: ref.id,
+            name,
+            location,
+            image
+          }));
+        }
+      }
     },
-    updateRace: (_, { id }) => {
-      Races[id].done = true;
-      return races[id];
+  Mutation: {
+    createRace: async (_, { name }, { user },{ city }, { country }, { image }, { date }, {url} ) => {
+        if (!user) {
+          throw new Error("Must be authenticated to insert todos");
+        }
+        const results = await client.query(
+          q.Create(q.Collection("Races"), {
+            data: {
+              name,
+              city,
+              country,
+              image,
+              date,
+              url,
+              owner: user
+            }
+          })
+        );
+        return {
+          ...results.data,
+          id: results.ref.id
+        };
+      },
+    updateRace: async (_, { id }, { user }, { name },{ city }, { country }, { image }, { date }, {url} ) => {
+        if (!user) {
+          throw new Error("Must be authenticated to insert todos");
+        }
+        const results = await client.query(
+          q.Update(q.Ref(q.Collection("Races"), id), {
+            data: {
+              name,
+              city,
+              country,
+              image,
+              date,
+              url
+            }
+          })
+        );
+        return {
+          ...results.data,
+          id: results.ref.id
+        };
+      }
     }
-  }
-};
+  };
 
 const server = new ApolloServer({
     typeDefs,
     resolvers,
-    //this is the Lambds context
+    //this is the Lambda context
     // we have a client context and a user context. if there is a user avaialble
     context: ({ context }) => {
       if (context.clientContext.user) {
