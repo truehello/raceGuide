@@ -3,23 +3,7 @@ const faunadb = require("faunadb");
 const q = faunadb.query;
 
 var client = new faunadb.Client({ secret: process.env.FAUNA_KEY });
-//example of a query reliant on logged in user
-// type Query {
-// Races: async (parent, args, { user }) => {
-//     if (!user) {
-//       return [];
-//     } else {
-//       const results = await client.query(
-//         q.Paginate(q.Match(q.Index("Races_by_user"), user))
-//       );
-//       return results.data.map(([ref, text, done]) => ({
-//         id: ref.id,
-//         text,
-//         done
-//       }));
-//     }
-//   }
-// }
+
 // Construct a schema, using GraphQL schema language
 const typeDefs = gql`
 
@@ -30,6 +14,7 @@ const typeDefs = gql`
     id: ID!
     name: String!
     city: String
+    country: String
     image: String
     date: String
     url: String
@@ -37,8 +22,8 @@ const typeDefs = gql`
     # updatedAt: DateTime!
   }
   type Mutation {
-    createRace(name: String!, city:String, description:String, image:String, date:String, url:String ): Race
-    updateRace(id: ID!, name: String!, city:String, description:String, image:String, date:String, url:String ): Race
+    createRace(name: String!, city:String, country:String, description:String, image:String, date:String, url:String ): Race
+    updateRace(id: ID!, name: String!, city:String, country:String, description:String, image:String, date:String, url:String ): Race
     deleteRace(id: ID!): Race
   }
 `;
@@ -65,7 +50,7 @@ const resolvers = {
       }
     },
   Mutation: {
-    createRace: async (_, { name }, { user },{ city }, { image }, { date }, {url} ) => {
+    createRace: async (_, { name }, { user }, { city }, { country }, { image }, { date }, { url } ) => {
         if (!user) {
           throw new Error("Must be authenticated to insert todos");
         }
@@ -73,11 +58,12 @@ const resolvers = {
           q.Create(q.Collection("Races"), {
             data: {
               name,
+              owner: user,
               city,
+              country,
               image,
               date,
-              url,
-              owner: user
+              url          
             }
           })
         );
@@ -86,7 +72,7 @@ const resolvers = {
           id: results.ref.id
         };
       },
-    updateRace: async (_, { id }, { user }, { name },{ city }, { image }, { date }, {url} ) => {
+    updateRace: async (_, { id }, { user }, { name },{ city }, { country }, { image }, { date }, {url} ) => {
         if (!user) {
           throw new Error("Must be authenticated to insert todos");
         }
@@ -95,6 +81,7 @@ const resolvers = {
             data: {
               name,
               city,
+              country,
               image,
               date,
               url
