@@ -51,7 +51,7 @@ const resolvers = {
       }
     },
   Mutation: {
-    createRace: async (_, { name }, { user }, { city }, { country }, { image }, { date }, { url } ) => {
+    createRace: async (_, { name }, { user } ) => {
         if (!user) {
           throw new Error("Must be authenticated to insert todos");
         }
@@ -59,12 +59,7 @@ const resolvers = {
           q.Create(q.Collection("Races"), {
             data: {
               name,
-              owner: user,
-              city,
-              country,
-              image,
-              date,
-              url          
+              owner: user         
             }
           })
         );
