@@ -30,7 +30,6 @@ const typeDefs = gql`
     id: ID!
     name: String!
     city: String
-    country: String
     image: String
     date: String
     url: String
@@ -38,8 +37,8 @@ const typeDefs = gql`
     # updatedAt: DateTime!
   }
   type Mutation {
-    createRace(name: String!, city:String, country:String, description:String, image:String, date:String, url:String ): Race
-    updateRace(id: ID!, name: String!, city:String, country:String, description:String, image:String, date:String, url:String ): Race
+    createRace(name: String!, city:String, description:String, image:String, date:String, url:String ): Race
+    updateRace(id: ID!, name: String!, city:String, description:String, image:String, date:String, url:String ): Race
     deleteRace(id: ID!): Race
   }
 `;
@@ -66,7 +65,7 @@ const resolvers = {
       }
     },
   Mutation: {
-    createRace: async (_, { name }, { user },{ city }, { country }, { image }, { date }, {url} ) => {
+    createRace: async (_, { name }, { user },{ city }, { image }, { date }, {url} ) => {
         if (!user) {
           throw new Error("Must be authenticated to insert todos");
         }
@@ -75,7 +74,6 @@ const resolvers = {
             data: {
               name,
               city,
-              country,
               image,
               date,
               url,
@@ -88,7 +86,7 @@ const resolvers = {
           id: results.ref.id
         };
       },
-    updateRace: async (_, { id }, { user }, { name },{ city }, { country }, { image }, { date }, {url} ) => {
+    updateRace: async (_, { id }, { user }, { name },{ city }, { image }, { date }, {url} ) => {
         if (!user) {
           throw new Error("Must be authenticated to insert todos");
         }
@@ -97,7 +95,6 @@ const resolvers = {
             data: {
               name,
               city,
-              country,
               image,
               date,
               url
