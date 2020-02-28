@@ -40,10 +40,11 @@ const resolvers = {
           const results = await client.query(
             q.Paginate(q.Match(q.Index("Race_by_User"), user))
           );
-          return results.data.map(([ref, name, location, image]) => ({
+          return results.data.map(([ref, name, city, country, image]) => ({
             id: ref.id,
             name,
-            location,
+            city,
+            country,
             image
           }));
         }
