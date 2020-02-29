@@ -13,17 +13,17 @@ const typeDefs = gql`
   type Race {
     id: ID!
     name: String!
-    city: String
-    country: String
-    image: String
-    date: String
-    url: String
+    # city: String
+    # country: String
+    # image: String
+    # date: String
+    # url: String
     # createdAt: DateTime!
     # updatedAt: DateTime!
   }
   type Mutation {
-    createRace(name: String!, city:String, country:String, description:String, image:String, date:String, url:String ): Race
-    updateRace(id: ID!, name: String!, city:String, country:String, description:String, image:String, date:String, url:String ): Race
+    createRace(name: String! ): Race
+    updateRace(id: ID!, name: String! ): Race
     deleteRace(id: ID!): Race
   }
 `;
@@ -40,31 +40,23 @@ const resolvers = {
           const results = await client.query(
             q.Paginate(q.Match(q.Index("Race_by_User"), user))
           );
-          return results.data.map(([ref, name, city, country, image]) => ({
+          return results.data.map(([ref, name]) => ({
             id: ref.id,
-            name,
-            city,
-            country,
-            image
+            name
           }));
         }
       }
     },
   Mutation: {
-    createRace: async (_, { name }, { user }, { city }, { country }, { image }, { date }, { url } ) => {
+    createRace: async (_, { name }, { user } ) => {
         if (!user) {
-          throw new Error("Must be authenticated to insert todos");
+          throw new Error("Must be authenticated to create Races");
         }
         const results = await client.query(
           q.Create(q.Collection("Races"), {
             data: {
               name,
-              owner: user,
-              city,
-              country,
-              image,
-              date,
-              url          
+              owner: user,         
             }
           })
         );
@@ -73,19 +65,14 @@ const resolvers = {
           id: results.ref.id
         };
       },
-    updateRace: async (_, { id }, { user }, { name },{ city }, { country }, { image }, { date }, {url} ) => {
+    updateRace: async (_, { id }, { user } ) => {
         if (!user) {
           throw new Error("Must be authenticated to insert todos");
         }
         const results = await client.query(
           q.Update(q.Ref(q.Collection("Races"), id), {
             data: {
-              name,
-              city,
-              country,
-              image,
-              date,
-              url
+              name
             }
           })
         );
