@@ -55,9 +55,8 @@ const resolvers = {
         const results = await client.query(
           q.Create(q.Collection("Races"), {
             data: {
-              ...args,
-              name,
-              city,
+              name: args.name,
+              city: args.city,
               owner: user,         
             }
           })
