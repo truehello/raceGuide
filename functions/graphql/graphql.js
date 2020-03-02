@@ -48,14 +48,14 @@ const resolvers = {
       }
     },
   Mutation: {
-    createRace: async (_, { name }, { user } ) => {
+    createRace: async (_, { args }, { user } ) => {
         // if (!user) {
         //   throw new Error("Must be authenticated to create Races");
         // }
         const results = await client.query(
           q.Create(q.Collection("Races"), {
             data: {
-              name,
+              ...args,
               owner: user,         
             }
           })
