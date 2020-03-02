@@ -15,6 +15,7 @@ const typeDefs = gql`
     name: String!
     city: String
     country: String
+    description: String
     image: String
     date: String
     url: String
@@ -22,7 +23,7 @@ const typeDefs = gql`
     # updatedAt: DateTime!
   }
   type Mutation {
-    createRace(name: String!, city: String, country:String, image: String, date:String ): Race
+    createRace(name: String!, city: String, country:String, description:string, image: String, date:String ): Race
     updateRace(id: ID!, name: String! ): Race
     deleteRace(id: ID!): Race
   }
