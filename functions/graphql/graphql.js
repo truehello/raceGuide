@@ -22,7 +22,7 @@ const typeDefs = gql`
     # updatedAt: DateTime!
   }
   type Mutation {
-    createRace(name: String!, city: String, country:String, image: String, date:String ): Race
+    createRace($name: String!, $city: String, $country:String, $image: String, $date:String ): Race
     updateRace(id: ID!, name: String! ): Race
     deleteRace(id: ID!): Race
   }
@@ -55,8 +55,7 @@ const resolvers = {
         const results = await client.query(
           q.Create(q.Collection("Races"), {
             data: {
-              name: args.name,
-              city: args.city,
+              ...args,
               owner: user,         
             }
           })
