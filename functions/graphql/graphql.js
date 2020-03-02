@@ -48,7 +48,7 @@ const resolvers = {
       }
     },
   Mutation: {
-    createRace: async (_, { name, city}, { user } ) => {
+    createRace: async (_, { name, city, country, date, description, image, url}, { user } ) => {
         // if (!user) {
         //   throw new Error("Must be authenticated to create Races");
         // }
@@ -57,6 +57,11 @@ const resolvers = {
             data: {
               name,
               city,
+              country,
+              date,
+              description,
+              image,
+              url,
               owner: user,         
             }
           })
