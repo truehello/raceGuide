@@ -56,8 +56,8 @@ const resolvers = {
           q.Create(q.Collection("Races"), {
             data: {
               ...args,
-              name:args.name,
-              city:args.city,
+              name,
+              city,
               owner: user,         
             }
           })
