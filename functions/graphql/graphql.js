@@ -13,16 +13,16 @@ const typeDefs = gql`
   type Race {
     id: ID!
     name: String!
-    # city: String
-    # country: String
-    # image: String
-    # date: String
-    # url: String
+    city: String
+    country: String
+    image: String
+    date: String
+    url: String
     # createdAt: DateTime!
     # updatedAt: DateTime!
   }
   type Mutation {
-    createRace(name: String! ): Race
+    createRace(name: String!, city: String!, country:String!, image: String!, date:String! ): Race
     updateRace(id: ID!, name: String! ): Race
     deleteRace(id: ID!): Race
   }
