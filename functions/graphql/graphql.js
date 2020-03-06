@@ -15,7 +15,7 @@ const typeDefs = gql`
 
   type Query {
     Races: [Race]!
-    Race_by_User: [Race]
+    RacesByUser: [Race]
   }
   type Race {
     id: ID!
@@ -29,8 +29,19 @@ const typeDefs = gql`
     # createdAt: DateTime!
     # updatedAt: DateTime!
   }
+  input RaceInput {
+    id: ID
+    name: String
+    city: String
+    country: String
+    description: String
+    image: String
+    raceDate: Date
+    url: String
+  }
+
   type Mutation {
-    createRace(name: String!, city: String, country:String, description:String, image: String, raceDate:Date, url:String ): Race
+    addRace( race:RaceInput ): Race
     updateRace(id: ID!, name: String! ): Race
     deleteRace(id: ID!): Race
   }
@@ -65,20 +76,14 @@ const resolvers = {
       }
     },
   Mutation: {
-    createRace: async (_, { name, city, country, raceDate, description, image, url}, { user } ) => {
+    addRace: async (_, { race}, { user } ) => {
         // if (!user) {
         //   throw new Error("Must be authenticated to create Races");
         // }
         const results = await client.query(
           q.Create(q.Collection("Races"), {
             data: {
-              name,
-              city,
-              country,
-              raceDate,
-              description,
-              image,
-              url,
+              race,
               owner: user,         
             }
           })
