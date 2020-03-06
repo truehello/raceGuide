@@ -6,6 +6,7 @@ var client = new faunadb.Client({ secret: process.env.FAUNA_KEY });
 
 // Construct a schema, using GraphQL schema language
 const typeDefs = gql`
+  scalar Date
 
   type Query {
     Races: [Race]!
@@ -17,13 +18,13 @@ const typeDefs = gql`
     country: String
     description: String
     image: String
-    date: String
+    raceDate: Date
     url: String
     # createdAt: DateTime!
     # updatedAt: DateTime!
   }
   type Mutation {
-    createRace(name: String!, city: String, country:String, description:String, image: String, date:String, url:String ): Race
+    createRace(name: String!, city: String, country:String, description:String, image: String, raceDate:Date, url:String ): Race
     updateRace(id: ID!, name: String! ): Race
     deleteRace(id: ID!): Race
   }
@@ -34,7 +35,16 @@ const typeDefs = gql`
 // Provide resolver functions for your schema fields
 const resolvers = {
   Query: {
-    Races: async (parent, args, { user }) => {
+    Races: async() => {
+      const results = await client.query(
+        q.Paginate(q.Match(q.Index("Races")))
+      );
+      return results.data.map(([ref, name]) => ({
+        id: ref.id,
+        name
+      }));
+    },
+    RacesByUser: async (parent, args, { user }) => {
         if (!user) {
           return [];
         } else {
@@ -49,7 +59,7 @@ const resolvers = {
       }
     },
   Mutation: {
-    createRace: async (_, { name, city, country, date, description, image, url}, { user } ) => {
+    createRace: async (_, { name, city, country, raceDate, description, image, url}, { user } ) => {
         // if (!user) {
         //   throw new Error("Must be authenticated to create Races");
         // }
@@ -59,7 +69,7 @@ const resolvers = {
               name,
               city,
               country,
-              date,
+              raceDate,
               description,
               image,
               url,
@@ -88,7 +98,26 @@ const resolvers = {
           id: results.ref.id
         };
       }
-    }
+    },
+
+    Date: new GraphQLScalarType({
+      name: "Date",
+      description: "it's a date, deal with it",
+      parseValue(value) {
+        // value from the client
+        return new Date(value);
+      },
+      serialize(value) {
+        // value sent to the client
+        return value.getTime();
+      },
+      parseLiteral(ast) {
+        if (ast.kind === Kind.INT) {
+          return new Date(ast.value);
+        }
+        return null;
+      }
+    })
   };
 
 const server = new ApolloServer({
