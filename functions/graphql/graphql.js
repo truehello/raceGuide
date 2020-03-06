@@ -1,5 +1,10 @@
 const { ApolloServer, gql } = require("apollo-server-lambda");
 const faunadb = require("faunadb");
+
+const { GraphQLScalarType } = require("graphql");
+const { Kind } = require("graphql/language");
+
+
 const q = faunadb.query;
 
 var client = new faunadb.Client({ secret: process.env.FAUNA_KEY });
