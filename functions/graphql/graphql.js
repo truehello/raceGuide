@@ -54,7 +54,7 @@ const resolvers = {
   Query: {
     Races: async() => {
       const results = await client.query(
-        q.Paginate(q.Match(q.Index("Races")))
+        q.Paginate(q.Match(q.Index("All_Races")))
       );
       return results.data.map(([ref, name]) => ({
         id: ref.id,
