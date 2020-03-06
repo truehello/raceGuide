@@ -15,6 +15,7 @@ const typeDefs = gql`
 
   type Query {
     Races: [Race]!
+    Race_by_User: [Race]
   }
   type Race {
     id: ID!
